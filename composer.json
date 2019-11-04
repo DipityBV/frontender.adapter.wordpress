@@ -1,0 +1,13 @@
+{
+    "name": "frontender/wordpress-adapter",
+    "description": "Frontender Platform Generic Wordpress Adapter",
+    "version": "1.0.0",
+    "require": {
+        "guzzlehttp/guzzle": "^6.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Frontender\\Platform\\Model\\Wordpress\\": "lib/"
+        }
+    }
+}
