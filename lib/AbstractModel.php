@@ -6,8 +6,7 @@ use Doctrine\Common\Inflector\Inflector;
 use GuzzleHttp\Client;
 use Slim\Container;
 
-class AbstractModel extends \Frontender\Core\Model\AbstractModel
-{
+class AbstractModel extends \Frontender\Core\Model\AbstractModel {
 	protected $_client;
 	protected $_config;
 
@@ -17,18 +16,18 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel
 		$this->_config = $container->config;
 
 		$this->getState()
-			->insert('id')
-			->insert('limit')
-			->insert('offset')
-			->insert('search')
-			->insert('before')
-			->insert('after')
-			->insert('author')
-			->insert('exclude')
-			->insert('include')
-			->insert('order')
-			->insert('orderby')
-			->insert('slug');
+		     ->insert( 'id' )
+		     ->insert( 'limit' )
+		     ->insert( 'offset' )
+		     ->insert( 'search' )
+		     ->insert( 'before' )
+		     ->insert( 'after' )
+		     ->insert( 'author' )
+		     ->insert( 'exclude' )
+		     ->insert( 'include' )
+		     ->insert( 'order' )
+		     ->insert( 'orderby' )
+		     ->insert( 'slug' );
 	}
 
 	/**
@@ -36,14 +35,13 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel
 	 *
 	 * @return Client The configured guzzle client.
 	 */
-	protected function getClient(): Client
-	{
-		if(!$this->_client) {
-			$config = $this->getConfig();
-			$this->_client = new Client([
+	protected function getClient(): Client {
+		if ( ! $this->_client ) {
+			$config        = $this->getConfig();
+			$this->_client = new Client( [
 				'base_uri' => $config['url'] . '/wp-json/wp/v2/',
-				'auth' => [$config['username'], $config['password']]
-			]);
+				'auth'     => [ $config['username'], $config['password'] ]
+			] );
 		}
 
 		return $this->_client;
@@ -57,22 +55,48 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel
 	 *
 	 * @return array The config for the current adapter installation
 	 */
-	protected function getConfig(): array
-	{
-		$class = get_class($this);
-		$class = str_replace('Frontender\\Platform\\Model\\', '', $class);
-		$parts = explode('\\', $class);
-		$namespace = strtolower(array_shift($parts));
+	protected function getConfig(): array {
+		$class     = get_class( $this );
+		$class     = str_replace( 'Frontender\\Platform\\Model\\', '', $class );
+		$parts     = explode( '\\', $class );
+		$namespace = strtolower( array_shift( $parts ) );
 
-		if($namespace === 'wordpress') {
+		if ( $namespace === 'wordpress' ) {
 			$namespace = 'default';
 		}
 
 		return [
 			'username' => $this->_config->{'wordpress_' . $namespace . '_username'},
 			'password' => $this->_config->{'wordpress_' . $namespace . '_password'},
-			'url' => $this->_config->{'wordpress_' . $namespace . '_url'}
+			'url'      => $this->_config->{'wordpress_' . $namespace . '_url'}
 		];
+	}
+
+	public function getTotal(): int {
+		// Do we need to get them all?
+		try {
+			$model = clone $this;
+			$model->setState( [
+				'limit' => 1
+			] );
+
+			$response = $this->getClient()->get(
+				$model->getEndpoint(),
+				$model->getRequestOptions()
+			);
+
+			$header = $response->getHeader( 'X-WP-Total' );
+
+			if($header) {
+				return $header[0];
+			}
+		} catch(\Exception $e) {
+			// NOOP
+		} catch(\Error $e) {
+			// NOOP
+		}
+
+		return 0;
 	}
 
 	/**
@@ -86,28 +110,28 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel
 			$this->getEndpoint(),
 			$this->getRequestOptions()
 		);
-		$content = $response->getBody()->getContents();
-		$result = json_decode($content, true);
+		$content  = $response->getBody()->getContents();
+		$result   = json_decode( $content, true );
 
 		// If we have an ID in the request we have a single
-		if($this->getState()->id) {
-			$itemModel = new $this($this->container);
-			$itemModel->setData($result);
-			$itemModel->setState([
+		if ( $this->getState()->id ) {
+			$itemModel = new $this( $this->container );
+			$itemModel->setData( $result );
+			$itemModel->setState( [
 				'id' => $result['id']
-			]);
+			] );
 
-			return [$itemModel];
+			return [ $itemModel ];
 		} else {
-			return array_map(function($item) {
-				$itemModel = new $this($this->container);
-				$itemModel->setData($item);
-				$itemModel->setState([
+			return array_map( function ( $item ) {
+				$itemModel = new $this( $this->container );
+				$itemModel->setData( $item );
+				$itemModel->setState( [
 					'id' => $item['id']
-				]);
+				] );
 
 				return $itemModel;
-			}, $result);
+			}, $result );
 		}
 	}
 
@@ -120,14 +144,14 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel
 	protected function getRequestOptions(): array {
 		$query = $this->getState()->getValues();
 
-		if(isset($query['id'])) {
-			unset($query['id']);
+		if ( isset( $query['id'] ) ) {
+			unset( $query['id'] );
 		}
 
 		// Map the limit to per_page as is used in the API of WordPress.
-		if(isset($query['limit'])) {
+		if ( isset( $query['limit'] ) ) {
 			$query['per_page'] = $query['limit'];
-			unset($query['limit']);
+			unset( $query['limit'] );
 		}
 
 		return $query;
@@ -140,19 +164,42 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel
 	 * @return string
 	 */
 	protected function getEndpoint(): string {
-		$class = explode('\\', get_class($this));
-		$modelName = array_pop($class);
-		$modelName = strtolower(str_replace('Model', '', $modelName));
+		$class     = explode( '\\', get_class( $this ) );
+		$modelName = array_pop( $class );
+		$modelName = strtolower( str_replace( 'Model', '', $modelName ) );
 
-		if($modelName === 'abstract') {
+		if ( $modelName === 'abstract' ) {
 			return '';
 		}
 
 		$state = $this->getState()->getValues();
-		if(isset($state['id']) && !empty($state['id'])) {
+		if ( isset( $state['id'] ) && ! empty( $state['id'] ) ) {
 			$modelName .= '/' . $state['id'];
 		}
 
 		return $modelName;
+	}
+
+	/**
+	 * This method is only for internal usage!
+	 * This will get a new model based on the current namespace,
+	 * as we can't rely on the current namespace because of the config.
+	 *
+	 * The container will automatically be given because it is correct in the current context.
+	 *
+	 * @param string $modelName The model name to retrieve.
+	 *
+	 * @return AbstractModel The new model instance within the current namespace.
+	 */
+	protected function getModel(string $modelName): AbstractModel {
+		$className = get_class($this);
+		$parts = explode('\\', $className);
+
+		array_pop($parts);
+
+		$parts[] = $modelName;
+		$className = implode('\\', $parts);
+
+		return new $className($this->container);
 	}
 }

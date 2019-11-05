@@ -14,4 +14,13 @@ class UsersModel extends AbstractModel
 			->insert('roles')
 			->insert('who');
 	}
+
+	public function getPopertyPosts() {
+		$postsModel = $this->getModel('PostsModel');
+		$postsModel->setState([
+			'author' => [$this['id']]
+		]);
+
+		return $postsModel->fetch();
+	}
 }

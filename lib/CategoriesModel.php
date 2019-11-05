@@ -13,4 +13,13 @@ class CategoriesModel extends AbstractModel
 			->insert('hide_empty')
 			->insert('slug');
 	}
+
+	public function getPropertyPosts() {
+		$postsModel = $this->getModel('PostsModel');
+		$postsModel->setState([
+			'categories' => [$this['id']]
+		]);
+
+		return $postsModel->fetch();
+	}
 }

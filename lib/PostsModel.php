@@ -13,6 +13,26 @@ class PostsModel extends AbstractModel
 			->insert('status')
 			->insert('categories')
 			->insert('tags')
-			->insert('sticky');
+			->insert('sticky')
+			->insert('author');
+	}
+
+	public function getPropertyFeaturedImage() {
+		if(!$this['featured_media']) {
+			return false;
+		}
+
+		$mediaModel = $this->getModel('MediaModel');
+		$mediaModel->setState([
+			'id' => $this['featured_media']
+		]);
+		$media = $mediaModel->fetch();
+		$medium = array_shift($media);
+
+		if(!$medium) {
+			return false;
+		}
+
+		return $medium['media_details'];
 	}
 }
