@@ -3,12 +3,15 @@
 namespace Frontender\Platform\Model\Wordpress;
 
 use Doctrine\Common\Inflector\Inflector;
+use Frontender\Platform\Model\Wordpress\Traits\Sortable;
 use GuzzleHttp\Client;
 use Slim\Container;
 
 class AbstractModel extends \Frontender\Core\Model\AbstractModel {
 	protected $_client;
 	protected $_config;
+
+	use Sortable;
 
 	public function __construct( Container $container ) {
 		parent::__construct( $container );
