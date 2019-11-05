@@ -193,13 +193,13 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel {
 	 */
 	protected function getModel(string $modelName): AbstractModel {
 		$className = get_class($this);
+
 		$parts = explode('\\', $className);
-
-		array_pop($parts);
-
+		$parts = array_slice($parts, 0, 4);
 		$parts[] = $modelName;
+
 		$className = implode('\\', $parts);
 
-		return new $className($this->container);
+		return new $className( $this->container );
 	}
 }
