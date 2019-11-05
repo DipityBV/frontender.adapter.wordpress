@@ -143,6 +143,7 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel {
 	 */
 	protected function getRequestOptions(): array {
 		$query = $this->getState()->getValues();
+		$options = [];
 
 		if ( isset( $query['id'] ) ) {
 			unset( $query['id'] );
@@ -154,7 +155,9 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel {
 			unset( $query['limit'] );
 		}
 
-		return $query;
+		$options['query'] = $query;
+
+		return $options;
 	}
 
 	/**
