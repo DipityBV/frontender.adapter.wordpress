@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Frontender\Platform\Model\Wordpress;
 
 use Doctrine\Common\Inflector\Inflector;
@@ -91,7 +93,7 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel {
 			$header = $response->getHeader( 'X-WP-Total' );
 
 			if($header) {
-				return $header[0];
+				return (int) $header[0];
 			}
 		} catch(\Exception $e) {
 			// NOOP

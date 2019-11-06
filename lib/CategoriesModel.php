@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Frontender\Platform\Model\Wordpress;
 
 use Slim\Container;
@@ -14,7 +16,7 @@ class CategoriesModel extends AbstractModel
 			->insert('slug');
 	}
 
-	public function getPropertyPosts() {
+	public function getPropertyPosts(): array {
 		$postsModel = $this->getModel('PostsModel');
 		$postsModel->setState([
 			'categories' => [$this['id']]

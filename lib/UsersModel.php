@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Frontender\Platform\Model\Wordpress;
 
 use Slim\Container;
@@ -15,7 +17,7 @@ class UsersModel extends AbstractModel
 			->insert('who');
 	}
 
-	public function getPopertyPosts() {
+	public function getPopertyPosts(): array {
 		$postsModel = $this->getModel('PostsModel');
 		$postsModel->setState([
 			'author' => [$this['id']]

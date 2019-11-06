@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Frontender\Platform\Model\Wordpress;
 
 use Slim\Container;
@@ -17,9 +19,9 @@ class PostsModel extends AbstractModel
 			->insert('author');
 	}
 
-	public function getPropertyFeaturedImage() {
+	public function getPropertyFeaturedImage(): array {
 		if(!$this['featured_media']) {
-			return false;
+			return [];
 		}
 
 		$mediaModel = $this->getModel('MediaModel');
@@ -30,7 +32,7 @@ class PostsModel extends AbstractModel
 		$medium = array_shift($media);
 
 		if(!$medium) {
-			return false;
+			return [];
 		}
 
 		return $medium['media_details'];
