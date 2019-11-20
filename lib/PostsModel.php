@@ -19,9 +19,9 @@ class PostsModel extends AbstractModel
 			->insert('author');
 	}
 
-	public function getPropertyFeaturedImage(): array {
+	public function getPropertyFeaturedImage() {
 		if(!$this['featured_media']) {
-			return [];
+			return false;
 		}
 
 		$mediaModel = $this->getModel('MediaModel');
@@ -32,9 +32,9 @@ class PostsModel extends AbstractModel
 		$medium = array_shift($media);
 
 		if(!$medium) {
-			return [];
+			return false;
 		}
 
-		return $medium['media_details'];
+		return $medium;
 	}
 }
