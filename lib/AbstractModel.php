@@ -22,7 +22,7 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel {
 
 		$this->getState()
 		     ->insert( 'id' )
-		     ->insert( 'limit' )
+		     ->insert( 'limit', 20 )
 		     ->insert( 'offset' )
 		     ->insert( 'search' )
 		     ->insert( 'before' )
@@ -111,6 +111,21 @@ class AbstractModel extends \Frontender\Core\Model\AbstractModel {
 	 * @return array The fetched items.
 	 */
 	public function fetch(): array {
+		
+		if($this->getState()->id && is_array($this->getState()->id)) {
+		    return array_map(function($id) {
+			$model = new $this($this->container);
+			$model->setState([
+			    'id' => $id
+			]);
+			$item = $model->fetch();
+			if(count($item)) {
+			    return array_shift($item);
+			}
+			return false;
+		    }, $this->getState()->id);
+		}
+		
 		$response = $this->getClient()->get(
 			$this->getEndpoint(),
 			$this->getRequestOptions()
